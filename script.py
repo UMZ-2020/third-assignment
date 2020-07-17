@@ -7,6 +7,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import plot_confusion_matrix
 from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import fbeta_score
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -29,7 +31,7 @@ print("Occupancy percentage is: " + str(occupancy_percentage))
 print("Zero rule model accurancy on training set is: " + str
       (1 - occupancy_percentage))
 
-# logistic regression classifier on one independent variable
+# logistic regression classifier on one independent variable - Temperature
 clf = LogisticRegression()
 X_train = df[['Temperature']]
 y_train = df.Occupancy
@@ -53,7 +55,14 @@ specificity = tn/(tn+fp)
 print("Training set specificity for logisitic regression model " + "on
       Temperature variable: \n" + str(specificity))
 
-# test dataset for one variable
+# F-measure
+f1_score(y_train, y_train_pred)
+# a) There should always be a person in the room
+fbeta_score(y_train, y_train_pred, beta=0.5)
+# b) There should be no people in the room
+fbeta_score(y_train, y_train_pred, beta=2)
+
+# test dataset for one variable - Temperature
 df_column_names = ['Date', 'Temperature', 'Humidity', 'Light',
                    'CO2', 'HumidityRatio']
 X_column_name = ['Temperature']
@@ -86,6 +95,28 @@ plt.show()
 plot_confusion_matrix(clf, X_test, y_true, normalize='true')
 plt.show()
 
+# logistic regression classifier on one independent variable - CO2
+clf = LogisticRegression()
+X_train = df[['CO2']]
+Y_train = df.Occupancy
+
+clf.fit(X_train, Y_train)
+Y_train_pred = clf.predict(X_train)
+
+clf_accuracy = float(sum(Y_train == Y_train_pred)) / float(len(df))
+print("Training set accuracy for logistic regression model " + "on
+      CO2 variable: \n" + str(clf_accuracy))
+
+accuracy_score(Y_train, np.zeros(len(Y_train)))
+accuracy_score(Y_train, Y_train_pred)
+
+# F-measure
+f1_score(Y_train, Y_train_pred)
+# a) There should always be a person in the room
+fbeta_score(Y_train, Y_train_pred, beta=0.5)
+# b) There should be no people in the room
+fbeta_score(Y_train, Y_train_pred, beta=2)
+
 # logistic regression classifier on all but date independent variables
 clf_all = LogisticRegression()
 X_train_all = df[['Temperature', 'Humidity', 'Light', 'CO2', 'HumidityRatio']]
@@ -108,6 +139,13 @@ tn, fp, fn, tp
 specificity = tn/(tn+fp)
 print("Training set specificity for logisitic regression model " + "on
       all but date variable: \n" + str(specificity))
+
+# F-measure
+f1_score(y_train, y_train_pred_all)
+# a) There should always be a person in the room
+fbeta_score(y_train, y_train_pred_all, beta=0.5)
+# b) There should be no people in the room
+fbeta_score(y_train, y_train_pred_all, beta=2)
 
 # test dataset for all but date independent variables
 df_column_names = ['Date', 'Temperature', 'Humidity', 'Light',
