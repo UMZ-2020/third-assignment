@@ -6,6 +6,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import plot_confusion_matrix
+
+import matplotlib.pyplot as plt
 
 df = pd.read_csv('survey_results_public.csv', usecols=['Hobbyist',
                                                        'Respondent',
@@ -65,4 +69,34 @@ tn, fp, fn, tp
 specificity = tn/(tn+fp)
 print("Training set specificity for logisitic regression model " + "on
       all but Respondent variable: \n" + str(specificity))
+
+# division into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X_train_all,
+                                                    y_train, test_size=0.33,
+                                                    random_state=0)
+print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+
+# logistic regression classifier on all but Respondent independent variables
+clf = LogisticRegression()
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+
+# accuracy
+clf_accuracy = accuracy_score(y_test, y_pred)
+print("Test set accuracy for logisitic regression model " +
+      "on all but Respondent variable:\n" + str(clf_all_accuracy))
+
+# sensitivity, also called recall
+recall_score(y_test, y_pred)
+
+# specificity
+conf_matrix = confusion_matrix(y_test, y_pred)
+tn, fp, fn, tp = conf_matrix.ravel()
+tn, fp, fn, tp
+specificity = tn/(tn+fp)
+print("Test set specificity for logisitic regression model " + "on
+      all but Respondent variable: \n" + str(specificity))
+
+plot_confusion_matrix(clf, X_test, y_test, normalize='true')
+plt.show()
 
