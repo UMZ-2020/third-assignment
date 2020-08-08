@@ -2,6 +2,8 @@ import os
 import pandas as pd
 
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import f1_score
+from sklearn.metrics import fbeta_score
 
 train_file = os.path.join('data', 'train.tsv')
 test_file = os.path.join('data', 'test.tsv')
@@ -55,3 +57,13 @@ test_all_sensitivity = sum(y_test & y_test_all_pred) / sum(y_test_all_pred)
 test_all_specificity = sum(-~-(y_test | y_test_all_pred)) / (len(y_test_all_pred) - sum(y_test_all_pred))
 
 pd.DataFrame(y_test_pred).to_csv(output_file, index=False, header=False)
+
+f_train = f1_score(y_train, y_train_pred)
+f_test = f1_score(y_test, y_test_pred)
+f_beta_a_test = fbeta_score(y_test, y_test_pred, beta=0.5)
+f_beta_b_test = fbeta_score(y_test, y_test_pred, beta=2)
+
+f_train_all = f1_score(y_train, y_train_all_pred)
+f_test_all = f1_score(y_test, y_test_all_pred)
+f_beta_a_test_all = fbeta_score(y_test, y_test_all_pred, beta=0.5)
+f_beta_b_test_all = fbeta_score(y_test, y_test_all_pred, beta=2)
